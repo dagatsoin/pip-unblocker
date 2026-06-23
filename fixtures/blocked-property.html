@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: blocked (property only)</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 640px; }
+      video { width: 320px; height: 180px; background: #000; border-radius: 8px; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>blocked-property.html — property-only suppression</h1>
+    <p>
+      The video has <strong>no attribute</strong>; instead its
+      <code>disablePictureInPicture</code> <strong>property</strong> is forced
+      <code>true</code> by script. Expected: <strong>orange</strong> on load;
+      clicking makes the property no longer <code>true</code> and turns the icon
+      <strong>green</strong>.
+    </p>
+    <!-- @implements FS-001.1, BS-001.1 (the forced `disablePictureInPicture`
+         property — with NO content attribute — is the second detection signal →
+         blocked). @implements FS-001.4 (click neutralizes the property),
+         FS-001.5 (green confirms it). -->
+    <video id="v" autoplay muted playsinline></video>
+    <script src="sample-stream.js"></script>
+    <script src="_status.js"></script>
+    <script>
+      const v = document.getElementById("v");
+      // Force the property without setting the content attribute.
+      v.disablePictureInPicture = true;
+      attachSampleStream(v, "amber");
+    </script>
+  </body>
+</html>

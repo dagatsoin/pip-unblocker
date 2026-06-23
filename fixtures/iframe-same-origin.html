@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: same-origin iframe blocker</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 700px; }
+      iframe { width: 380px; height: 320px; border: 2px solid #cbd5e1; border-radius: 8px; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>iframe-same-origin.html — nested same-origin blocker (A2)</h1>
+    <p>
+      The top page has no video of its own. It embeds
+      <code>blocked.html</code> from the <strong>same origin</strong> in an
+      iframe. Because the content script runs in same-origin frames
+      (<code>all_frames</code>), the embedded blocker should be detected
+      (icon <strong>orange</strong>) and removed on click
+      (icon <strong>green</strong>). Cross-origin frames are out of scope (A2).
+    </p>
+    <!-- @implements BS-001.1 (per-frame aggregation: the tab is blocked because a
+         same-origin child frame is blocked, even though the top page has no video).
+         @implements FS-001.4 (click removes suppression inside the same-origin frame).
+         Exercises assumption A2 (same-origin nested context covered; cross-origin
+         deferred from v1). -->
+    <iframe src="blocked.html" title="embedded blocked fixture"></iframe>
+    <script src="_status.js"></script>
+  </body>
+</html>

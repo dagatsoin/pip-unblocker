@@ -1,0 +1,16 @@
+{
+  "name": "pip-unblocker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome MV3 extension that re-enables Picture-in-Picture on sites that suppress it. FS-001.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/",
+    "icons": "node scripts/generate-icons.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

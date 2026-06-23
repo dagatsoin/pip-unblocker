@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: blocked (attribute)</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 640px; }
+      video { width: 320px; height: 180px; background: #000; border-radius: 8px; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>blocked.html — attribute suppression</h1>
+    <p>
+      A single <code>&lt;video&gt;</code> carrying the
+      <code>disablepictureinpicture</code> <strong>attribute</strong>. Expected:
+      icon turns <strong>orange</strong> on load; clicking the icon strips the
+      attribute and turns it <strong>green</strong>; native PiP then works.
+    </p>
+    <!-- @implements FS-001.1, BS-001.1 (attribute detection signal → blocked).
+         @implements FS-001.2 (orange on load), FS-001.4 (click strips the
+         attribute), FS-001.5 (green confirms the removal). -->
+    <video id="v" disablepictureinpicture autoplay muted playsinline></video>
+    <script src="sample-stream.js"></script>
+    <script src="_status.js"></script>
+    <script>
+      attachSampleStream(document.getElementById("v"), "amber");
+    </script>
+  </body>
+</html>

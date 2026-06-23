@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: dynamically added blocker</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 640px; }
+      video { width: 320px; height: 180px; background: #000; border-radius: 8px; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+      #log { color: #475569; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <h1>dynamic-add.html — late blocker (FS-001.7)</h1>
+    <p>
+      Loads <strong>clear</strong> (no video). About <strong>1.5s</strong> after
+      load, a suppressed <code>&lt;video&gt;</code> is injected. Expected: icon
+      starts <strong>default</strong>, then flips to <strong>orange</strong> on
+      its own once the blocked video appears — no reload required.
+    </p>
+    <p id="log">waiting to inject…</p>
+    <!-- @implements FS-001.7 (a video added ~1.5s after load is detected with no
+         reload → default flips to orange). @implements BS-001.6 (the freshly
+         added blocker wins the tab's state). -->
+    <script src="sample-stream.js"></script>
+    <script src="_status.js"></script>
+    <script>
+      setTimeout(() => {
+        const v = document.createElement("video");
+        v.id = "late";
+        v.setAttribute("disablepictureinpicture", "");
+        v.autoplay = true;
+        v.muted = true;
+        v.playsInline = true;
+        document.body.appendChild(v);
+        attachSampleStream(v, "amber");
+        document.getElementById("log").textContent =
+          "injected a disablepictureinpicture video at ~1.5s — icon should be orange now.";
+      }, 1500);
+    </script>
+  </body>
+</html>

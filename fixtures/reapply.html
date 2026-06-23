@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: re-applying blocker</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 700px; }
+      video { width: 240px; height: 135px; background: #000; border-radius: 8px; margin-right: 8px; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+      figure { margin: 0; }
+      figcaption { font-size: 13px; color: #475569; max-width: 240px; }
+    </style>
+  </head>
+  <body>
+    <h1>reapply.html — re-application handling (FS-001.8, BS-001.6)</h1>
+    <p>
+      Three hostile videos that keep re-asserting suppression after it is
+      removed. Expected after one click: the extension auto-re-removes the
+      moderate re-application and the icon <strong>stays green</strong>; the
+      <em>aggressive</em> variant may out-run re-removal and flip the icon back
+      to <strong>orange</strong> (BS-001.6) — both are acceptable outcomes.
+    </p>
+    <div class="row">
+      <!-- @implements FS-001.8 (attribute re-add) -->
+      <figure>
+        <video id="attr" disablepictureinpicture autoplay muted playsinline></video>
+        <figcaption>video[0]: re-adds the <code>disablepictureinpicture</code> attribute every 800ms.</figcaption>
+      </figure>
+      <!-- @implements FS-001.8 (property re-force) -->
+      <figure>
+        <video id="prop" autoplay muted playsinline></video>
+        <figcaption>video[1]: re-forces the <code>disablePictureInPicture</code> property every 800ms.</figcaption>
+      </figure>
+      <!-- @implements FS-001.8 / BS-001.6 (aggressive re-forcer): v1's reactive
+           re-removal may be out-paced, so the icon honestly falls back to orange.
+           The robust guarantee that this page can never win the race is DEFERRED
+           to EPIC-004 / MILESTONE-002 (see FS-001.8 "Implementation status"). -->
+      <figure>
+        <video id="fast" disablepictureinpicture autoplay muted playsinline></video>
+        <figcaption>video[2]: aggressively re-adds the attribute every ~50ms (may defeat re-removal → orange).</figcaption>
+      </figure>
+    </div>
+    <script src="sample-stream.js"></script>
+    <script src="_status.js"></script>
+    <script>
+      const attr = document.getElementById("attr");
+      const prop = document.getElementById("prop");
+      const fast = document.getElementById("fast");
+      attachSampleStream(attr, "amber");
+      attachSampleStream(prop, "amber");
+      attachSampleStream(fast, "amber");
+
+      prop.disablePictureInPicture = true;
+
+      setInterval(() => {
+        if (!attr.hasAttribute("disablepictureinpicture"))
+          attr.setAttribute("disablepictureinpicture", "");
+        if (prop.disablePictureInPicture !== true)
+          prop.disablePictureInPicture = true;
+      }, 800);
+
+      setInterval(() => {
+        if (!fast.hasAttribute("disablepictureinpicture"))
+          fast.setAttribute("disablepictureinpicture", "");
+      }, 50);
+    </script>
+  </body>
+</html>

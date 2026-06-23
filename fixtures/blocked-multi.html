@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: blocked (multi + mixed)</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 760px; }
+      video { width: 240px; height: 135px; background: #000; border-radius: 8px; margin-right: 8px; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+      figure { margin: 0; }
+      figcaption { font-size: 13px; color: #475569; }
+    </style>
+  </head>
+  <body>
+    <h1>blocked-multi.html — whole-page removal (BS-001.2)</h1>
+    <p>
+      Three videos: two are suppressed (one by attribute, one by property) and
+      one is clear. Expected: <strong>orange</strong> on load (any blocker →
+      blocked); a single click unblocks <strong>both</strong> suppressed videos,
+      leaves the clear one untouched, and turns the icon <strong>green</strong>.
+    </p>
+    <div class="row">
+      <!-- @implements FS-001.1 (detect both signals across multiple videos).
+           @implements BS-001.1 (ANY suppressed video → blocked).
+           @implements BS-001.2 (one click unblocks ALL suppressed videos and
+           leaves the already-clear one untouched). -->
+      <figure>
+        <video id="a" disablepictureinpicture autoplay muted playsinline></video>
+        <figcaption>video[0]: attribute-blocked</figcaption>
+      </figure>
+      <figure>
+        <video id="b" autoplay muted playsinline></video>
+        <figcaption>video[1]: property-blocked</figcaption>
+      </figure>
+      <figure>
+        <video id="c" autoplay muted playsinline></video>
+        <figcaption>video[2]: clear (must stay clear)</figcaption>
+      </figure>
+    </div>
+    <script src="sample-stream.js"></script>
+    <script src="_status.js"></script>
+    <script>
+      const b = document.getElementById("b");
+      b.disablePictureInPicture = true;
+      attachSampleStream(document.getElementById("a"), "amber");
+      attachSampleStream(b, "amber");
+      attachSampleStream(document.getElementById("c"), "emerald");
+    </script>
+  </body>
+</html>

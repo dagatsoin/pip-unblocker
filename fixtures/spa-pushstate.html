@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixture: SPA pushState + late blocked video (Netflix-shaped)</title>
+    <style>
+      body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; max-width: 680px; }
+      video { width: 320px; height: 180px; background: #000; border-radius: 8px; }
+      code { background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+      #log { color: #475569; font-size: 13px; }
+      button { font: inherit; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <h1>spa-pushstate.html — SPA route + late blocker (regression for the Netflix bug)</h1>
+    <p>
+      Reproduces the real-world failure shape: this page starts on a "browse"
+      route with <strong>no video</strong>, then a
+      <code>history.pushState</code> moves it to a <code>/watch</code> route and
+      <strong>only after that</strong> a suppressed
+      <code>&lt;video&gt;</code> (both the <code>disablepictureinpicture</code>
+      attribute <em>and</em> the <code>disablePictureInPicture</code> property)
+      is mounted — exactly like Netflix's SPA player.
+    </p>
+    <p>
+      <strong>Expected:</strong> the toolbar icon must end up
+      <strong>orange</strong>. The service worker must NOT have wiped the
+      detection on the SPA url change, and the content script must re-detect the
+      late player across the <code>pushState</code>.
+    </p>
+    <p>
+      <button id="go">Simulate Play → pushState to /watch (auto-fires in 1.5s)</button>
+    </p>
+    <p id="log">on /browse — no video yet…</p>
+    <!-- @implements FS-001.7 (re-detect a player added across an in-app/SPA
+         pushState navigation, no reload → orange). @implements FS-001.6 (a
+         same-document SPA url change is NOT a genuine navigation, so detection
+         state must NOT be reset — the regression this fixture guards).
+         hypothesis #2/#3 (SPA reset boundary + content-script re-detect). -->
+    <script src="sample-stream.js"></script>
+    <script src="_status.js"></script>
+    <script>
+      function gotoWatch() {
+        // 1) SPA navigation with NO document reload (the trigger for the bug).
+        history.pushState({ page: "watch" }, "", "/fixtures/spa-pushstate.html?watch=1");
+        document.getElementById("log").textContent =
+          "pushState → /watch done; mounting the blocked player shortly…";
+
+        // 2) Mount the suppressed player a beat AFTER the navigation, the way a
+        //    real SPA hydrates its <video>. Sets BOTH attribute and property.
+        setTimeout(() => {
+          const v = document.createElement("video");
+          v.id = "player";
+          v.setAttribute("disablepictureinpicture", "");
+          v.disablePictureInPicture = true; // belt-and-suspenders, Netflix-shaped
+          v.autoplay = true;
+          v.muted = true;
+          v.playsInline = true;
+          document.body.appendChild(v);
+          attachSampleStream(v, "crimson");
+          document.getElementById("log").textContent =
+            "blocked <video> mounted after pushState — icon should be ORANGE now.";
+        }, 400);
+      }
+
+      document.getElementById("go").addEventListener("click", gotoWatch);
+      // Auto-run so QA can just open the file and watch the icon.
+      setTimeout(gotoWatch, 1500);
+    </script>
+  </body>
+</html>
