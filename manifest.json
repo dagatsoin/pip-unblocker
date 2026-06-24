@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "PiP Unblocker",
+  "name": "Netflix PiP Unblocker",
   "version": "1.0.0",
-  "description": "Restores Picture-in-Picture on pages that block it. The icon turns orange when a blocker is detected; click it to re-enable PiP.",
+  "description": "Re-enables Picture-in-Picture on Netflix when it is blocked. The toolbar icon turns orange; click it to turn PiP back on.",
   "minimum_chrome_version": "111",
   "icons": {
     "16": "icons/default-16.png",
@@ -11,7 +11,7 @@
     "128": "icons/default-128.png"
   },
   "action": {
-    "default_title": "PiP Unblocker",
+    "default_title": "Netflix PiP Unblocker",
     "default_icon": {
       "16": "icons/default-16.png",
       "32": "icons/default-32.png",
@@ -25,7 +25,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["*://*.netflix.com/*"],
       "js": ["src/content.js"],
       "run_at": "document_start",
       "all_frames": true,
@@ -35,7 +35,7 @@
   "web_accessible_resources": [
     {
       "resources": ["src/lib/pip-core.js"],
-      "matches": ["<all_urls>"]
+      "matches": ["*://*.netflix.com/*"]
     }
   ],
   "permissions": ["webNavigation"]

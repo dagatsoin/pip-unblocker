@@ -1,7 +1,8 @@
-# PiP Unblocker (Chrome MV3)
+# Netflix PiP Unblocker (Chrome MV3)
 
-Re-enables Picture-in-Picture on pages that suppress it. The toolbar icon is the
-whole UI:
+Re-enables Picture-in-Picture on **Netflix** when the page suppresses it. The
+extension is scoped to `netflix.com` (manifest `content_scripts` match
+`*://*.netflix.com/*`). The toolbar icon is the whole UI:
 
 | Icon       | Meaning                                                            |
 | ---------- | ----------------------------------------------------------------- |

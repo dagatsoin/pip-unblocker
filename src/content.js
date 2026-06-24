@@ -287,10 +287,10 @@ function hookHistory() {
 // module loads), but its body only runs once the user clicks, by which point the
 // import below has long since resolved.
 //
-// This bootstrap runs on EVERY page because the manifest matches `<all_urls>`
-// with no per-site gate, which is what makes detection/removal universal.
-// @implements FS-001.9 (operate across all sites by default)
-// @implements BS-001.7 (universal availability, no per-site config in v1 — A1)
+// This bootstrap runs on Netflix pages because the manifest scopes the content
+// script to `*://*.netflix.com/*` (the extension's single, declared target).
+// @implements FS-001.9 (operate on the declared Netflix host scope)
+// @implements BS-001.7 (availability on Netflix, no per-site config in v1 — A1)
 
 (async function bootstrap() {
   // Guard: only operate where there is an inspectable document.

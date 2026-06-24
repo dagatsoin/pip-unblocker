@@ -204,7 +204,15 @@ function buildZip(entries) {
 const entries = collectEntries();
 
 // Start from a clean dist/ so a stale ZIP from a prior version can't linger.
-if (existsSync(DIST_DIR)) rmSync(DIST_DIR, { recursive: true, force: true });
+// Best-effort: on some mounts the old artifact can't be unlinked; in that case
+// we fall through and overwrite the same-named ZIP in place below.
+if (existsSync(DIST_DIR)) {
+  try {
+    rmSync(DIST_DIR, { recursive: true, force: true });
+  } catch {
+    /* unlink not permitted here — writeFileSync below overwrites in place */
+  }
+}
 mkdirSync(DIST_DIR, { recursive: true });
 
 const zip = buildZip(entries);

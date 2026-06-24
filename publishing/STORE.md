@@ -1,3 +1,8 @@
+> **Superseded for v1.0.0.** The shipped extension is now named **Netflix PiP
+> Unblocker** and scoped to `netflix.com`. Use **`publishing/SUBMISSION.md`** as
+> the authoritative, guideline-validated, paste-ready listing copy. This file is
+> kept for background/history.
+
 # Store Listing Kit — PiP Unblocker
 
 Copy-and-paste material for the Chrome Web Store (and Edge Add-ons) listing.

@@ -1,3 +1,7 @@
+> **Superseded for v1.0.0.** The hostable privacy policy now lives at
+> **`PRIVACY_POLICY.md`** (repo root) and the data-usage answers are consolidated
+> in **`publishing/SUBMISSION.md`**. This file is kept for background.
+
 # Privacy — PiP Unblocker
 
 **Plain statement:** PiP Unblocker collects, stores, and transmits **no user

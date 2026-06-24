@@ -128,10 +128,13 @@ def note_glyph(cx, cy, color):
 
 
 def netflix_favicon(x, y, sz=22):
-    """Red rounded square with a stylised white 'N'."""
-    s = f'<rect x="{x}" y="{y}" width="{sz}" height="{sz}" rx="6" fill="#e50914"/>'
-    s += (f'<path d="M{x+6},{y+sz-4} V{y+4} h3.5 l5,11 V{y+4} h3.5 V{y+sz-4} h-3.5 '
-          f'l-5,-11 V{y+sz-4} Z" fill="#ffffff"/>')
+    """Neutral generic 'video site' favicon (no third-party logo): a muted
+    rounded square with a small white play triangle."""
+    s = f'<rect x="{x}" y="{y}" width="{sz}" height="{sz}" rx="6" fill="#3b4250"/>'
+    cx, cy = x + sz / 2, y + sz / 2
+    t = sz * 0.22
+    s += (f'<path d="M{cx-t*0.7},{cy-t} L{cx+t*0.95},{cy} L{cx-t*0.7},{cy+t} Z" '
+          f'fill="#ffffff"/>')
     return s
 
 
