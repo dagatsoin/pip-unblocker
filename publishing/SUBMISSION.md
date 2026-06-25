@@ -73,7 +73,7 @@ page modification.
 
 ## Privacy → Permission justifications
 
-**Host access — `netflix.com`**
+**Host access — `netflix.com`** (the only permission the extension requests)
 ```
 The content script is declared only for *://*.netflix.com/*. At document start
 it checks Netflix's <video> elements for the standard "disablepictureinpicture"
@@ -81,16 +81,9 @@ suppression flag and, only on the user's click, removes that flag so the user
 can invoke their browser's native Picture-in-Picture. It reads ONLY that flag
 and modifies only that; it does not read page text, media, content, form data,
 cookies, or browsing history, stores nothing, and sends nothing off the device.
-```
-
-**`webNavigation`**
-```
-Keeps the per-tab toolbar icon correct across Netflix navigations: onCommitted
-(top frame, frameId 0) resets the icon on a genuine page load; onHistoryStateUpdated
-triggers a fresh scan on Netflix's single-page-app route changes (e.g. /watch)
-where no new content script is injected; getAllFrames enumerates same-origin
-frames so the block can be removed in each. No navigation URLs or history are
-stored, logged, or transmitted; the API is used only to sync the toolbar icon.
+The toolbar icon and the per-tab state are driven entirely by the content
+script's own messages — the extension requests no API permissions at all (no
+tabs, no webNavigation), so the only install prompt is access to netflix.com.
 ```
 
 **Remote code**
@@ -150,11 +143,13 @@ issues, consistent with comparable published extensions.
 - [ ] Upload the 5 screenshots in order.
 - [ ] Review once, then Submit.
 
-## Notes / optional hardening
+## Notes
 
-- `webNavigation` may surface a "Read your browsing history" install warning.
-  It is justified above and accesses no host data. If you later want to drop that
-  warning entirely, the icon-sync logic could be reworked to use `tabs` events
-  scoped to the active tab — a code change, out of scope for v1.0.0.
+- **Minimal permissions.** The extension requests no API permissions — not even
+  `tabs` or `webNavigation`. Per-tab icon state is driven entirely by the content
+  script's messages (a fresh content-script load signals a page reset; its
+  pushState/popstate hooks handle Netflix's in-app navigation). The only install
+  prompt is "Read and change your data on netflix.com", which is the narrowest
+  possible footprint for this single purpose.
 - Edge Add-ons accepts the same zip and copy; it more often requires the privacy
   policy URL (already provided).

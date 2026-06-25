@@ -82,11 +82,15 @@ allocate a range per `~/.claude/port-registry.md` and document it here.
 
 - **State ownership.** The service worker owns per-tab state in an in-memory
   `Map` only — no persistence (BS-001.4 / A5). State is reset **only** on a
-  genuine top-frame document load via `chrome.webNavigation.onCommitted`
-  (`frameId === 0`). SPA history updates (`onHistoryStateUpdated`) do **not**
-  reset state — resetting on the old, noisy `tabs.onUpdated` `status:"loading"`
-  signal raced live detection on SPA sites (Netflix) and stranded the icon on
-  default; that path remains only as a fallback when `webNavigation` is absent.
+  genuine top-frame document load, signaled by the content script: a freshly
+  injected content-script instance sends its first `report` with `fresh: true`
+  (frameId 0), and the worker `resetTab`s before recording that verdict. Because
+  the reset and the fresh verdict arrive in the **same** message, a reset can
+  never race live detection (the bug the old `tabs.onUpdated` `status:"loading"`
+  path hit on Netflix). **No `webNavigation` permission** — the extension
+  requests no API permissions at all, so its only install prompt is host access
+  to `netflix.com`. SPA history updates reuse the same content-script instance,
+  so they re-report **without** `fresh` and update the icon without a reset.
 - **SPA re-detection.** The content script patches `pushState`/`replaceState`
   and listens to `popstate` to re-scan + re-report across in-app navigations
   (e.g. Netflix `/watch`), since no new content script is injected for those.

@@ -27,9 +27,10 @@ and is never recorded or transmitted.
 
 ## Permissions
 
-The extension requests access to `netflix.com` pages and to tab/navigation
-events solely to detect and remove Picture-in-Picture suppression and to display
-the correct toolbar icon. These permissions are not used to gather data.
+The extension requests access only to `netflix.com` pages, solely to detect and
+remove Picture-in-Picture suppression and to display the correct toolbar icon.
+It requests no other permissions (no tabs, no navigation, no browsing history),
+and none of this access is used to gather data.
 
 ## Remote code
 

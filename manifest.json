@@ -37,6 +37,5 @@
       "resources": ["src/lib/pip-core.js"],
       "matches": ["*://*.netflix.com/*"]
     }
-  ],
-  "permissions": ["webNavigation"]
+  ]
 }

@@ -38,10 +38,13 @@ is isolated in `src/lib/pip-core.js` (no `chrome.*`, unit-tested in Node); the
 - **A publish-ready package and full store materials exist. Nothing has been
   submitted to any store yet.** The zip `dist/pip-unblocker-v1.0.0.zip` is built
   (16 runtime files: `manifest.json`, `src/` ×3, `icons/` ×12).
-- **Security review: PASS.** Permissions are minimized to exactly `webNavigation`
-  plus the `<all_urls>` content-script match (declared via
-  `content_scripts[].matches`, not a separate `host_permissions` key). No
-  network, no storage, no remote code, no analytics.
+- **Security review: PASS.** Scoped to **Netflix**: the only access is the
+  `*://*.netflix.com/*` content-script match (declared via
+  `content_scripts[].matches`, not a separate `host_permissions` key). **No API
+  permissions at all** — `webNavigation` was removed; per-tab state is now driven
+  by content-script messages (a `fresh` first report resets the tab). No network,
+  no storage, no remote code, no analytics. Only install prompt: access to
+  netflix.com.
 - **Deferred:** EPIC-004 (robustness hardening) is intentionally **in backlog**,
   out of v1 scope. See below.
 
@@ -56,8 +59,12 @@ touch the wiring, preserve them (also documented in `CLAUDE.md` and the Mileston
 2. **`chrome.action.setIcon` can't fetch an icon *path* from the MV3 service
    worker.** Icons are set via decoded `imageData`, not `path`.
 3. **Netflix-style SPA `pushState` navigations were wiping per-tab state.** State
-   resets now go through `chrome.webNavigation.onCommitted` (top-frame document
-   loads, `frameId === 0`) only — SPA history updates do **not** reset state.
+   resets are now driven by the content script: a freshly injected instance sends
+   its first `report` with `fresh: true` (frameId 0) and the worker resets the tab
+   in that same message — so a reset can't race detection. SPA history updates
+   reuse the same instance and re-report **without** `fresh`, so they don't reset.
+   (This replaced `chrome.webNavigation.onCommitted`, letting us drop the
+   `webNavigation` permission entirely.)
 
 ---
 

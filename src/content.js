@@ -69,6 +69,15 @@ let lastSuppressed = [];
 // Last verdict we sent, so SPA re-scans can be logged with useful before/after.
 let lastReported = null;
 
+// True until this content-script instance has successfully sent its first
+// report. A fresh content-script instance only exists after a genuine document
+// load (full navigation or hard reload) — never for an SPA history change, which
+// reuses the same instance — so the FIRST report carries `fresh: true` to tell
+// the service worker "this is a brand-new page; discard any prior state for this
+// tab." This replaces the old webNavigation.onCommitted reset, letting us drop
+// the `webNavigation` permission (and its "read your browsing history" warning).
+let firstReport = true;
+
 /**
  * Run a scan of this frame's document. If the user has already opted to
  * unblock here, transparently re-remove any suppression the page re-applied
@@ -132,9 +141,15 @@ function scanAndReport(reason = "scan") {
  */
 function report(verdict, reason = "scan") {
   lastReported = verdict;
+  // Tag only the first successful report of this instance as `fresh` so the
+  // worker resets the tab's prior-page state exactly once, on a genuine load.
+  const fresh = firstReport;
   try {
-    chrome.runtime.sendMessage({ type: "report", verdict });
-    debug(`report sent: verdict=${verdict} (${reason})`);
+    chrome.runtime.sendMessage({ type: "report", verdict, fresh });
+    // Only consume the `fresh` flag once the message actually went out; if the
+    // send threw we keep it true so the next scan retries the reset signal.
+    firstReport = false;
+    debug(`report sent: verdict=${verdict} fresh=${fresh} (${reason})`);
   } catch (_e) {
     // Service worker asleep or context torn down — the next scan will retry.
     debug(`report send failed (SW asleep?); will retry`);
